@@ -9,7 +9,7 @@ import { BiLike } from 'react-icons/bi';
 import { VscTag } from 'react-icons/vsc';
 import { GoReport } from 'react-icons/go';
 import { HiOutlineDocumentDuplicate, HiOutlineKey } from 'react-icons/hi';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { FullScreenImage } from '../components/FullScreenImage';
 import { selectData, getPostAction, selectLoading } from '../postSlice';
 // import '../components/HotTopic/'
@@ -60,9 +60,16 @@ const ReadingPage: React.FC = () => {
       <div className="container container--positions">
         <div className="col-9 container-main ">
           <div className="indexPath">
-            <h3 className="indexPath-name">Xã hội</h3>
-            <IoIosArrowForward className="indexPath-icon" />
-            <h3 className="indexPath-name">Thời sự</h3>
+            {data?.categories.map((e, i) => {
+              return (
+                <React.Fragment key={`category-${i}`}>
+                  <h3 className="indexPath-name">
+                    <Link to={e.url}>{e.title}</Link>
+                  </h3>
+                  <IoIosArrowForward className="indexPath-icon" />
+                </React.Fragment>
+              );
+            })}
           </div>
           <div className="content">
             <div className="col-8 content-left">
@@ -134,36 +141,23 @@ const ReadingPage: React.FC = () => {
                 <HiOutlineKey className="page-key-icon" />
                 <div className="page-key-box">
                   <ul className="page-key-list">
-                    <li className="page-key-item">Tổng Bí Thư</li>
-                    <li className="page-key-item">Ngoại Giao</li>
-                    <li className="page-key-item">Bản Sắc</li>
-                    <li className="page-key-item">Trường Phái</li>
-                    <li className="page-key-item">Can Trường</li>
-                    <li className="page-key-item">Khôn Khéo</li>
-                    <li className="page-key-item">Dân Tộc</li>
-                    <li className="page-key-item">Thời Đại Hồ Chí Minh</li>
-                    <li className="page-key-item">Đối Ngoại</li>
-                    <li className="page-key-item">Nguyễn Phú Trọng</li>
-                    <li className="page-key-item">Kiển Định</li>
-                    <li className="page-key-item">Sọi Chỉ Đỏ</li>
-                    <li className="page-key-item">Bất Biến</li>
-                    <li className="page-key-item">Đối Nội</li>
-                    <li className="page-key-item">Hòa Hiếu</li>
-                    <li className="page-key-item">Kiên Cường</li>
-                    <li className="page-key-item">Linh Hoạt</li>
-                    <li className="page-key-item">Mềm Mại</li>
-                    <li className="page-key-item">Thường Trực Ban Bí Thư</li>
-                    <li className="page-key-item">Tổng Lãnh Sự Việt Nam</li>
+                    {data?.keywords.map((e, i) => (
+                      <li className="page-key-item" key={`keyword-${i}`}>
+                        {e}
+                      </li>
+                    ))}
                   </ul>
                 </div>
               </div>
               <p className="page-source">
                 Nguồn{' '}
                 <span className="page-source-name">
-                  {data?.publisher?.name}
+                  {data?.publisher?.name || 'Sưu tầm'}
                 </span>
                 {': '}
-                <span className="page-source-link">{data?.sourceURL}</span>
+                <span className="page-source-link">
+                  <a href={data?.sourceURL || '#'}>{data?.sourceURL}</a>
+                </span>
               </p>
               <div className="page-news">
                 <div className="page-news-header">
