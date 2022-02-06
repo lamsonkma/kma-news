@@ -1,0 +1,19 @@
+FROM node:16-slim as base
+
+ARG BUILD_TARGET=backend
+
+ENV TZ=Asia/Ho_Chi_Minh
+
+WORKDIR /home/node/app
+
+COPY package*.json .
+
+RUN npm i
+
+COPY . .
+
+ENV NX_DAEMON=false
+
+RUN npx nx build ${BUILD_TARGET}
+
+CMD [ "node", "./dist/apps/${BUILD_TARGET}/main.js" ]
