@@ -57,4 +57,9 @@ export class AuthController {
   refresh(@Cookies('refresh_token') refresh_token: string) {
     return this.authService.refresh(refresh_token);
   }
+
+  @Post('login/zalo')
+  loginByZalo() {
+    return; // Login success
+  }
 }

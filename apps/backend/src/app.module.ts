@@ -21,12 +21,13 @@ import { EnvValidationSchema } from '@kma-news/env-validation-schema';
 import { TokenModule } from './token/token.module';
 import { CommentModule } from './comment/comment.module';
 import { Comment } from './comment/entities/comment.entity';
+import zaloConfig from './config/zalo.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [databaseConfig, jwtConfig],
+      load: [databaseConfig, jwtConfig, zaloConfig],
       validationSchema: EnvValidationSchema,
       validationOptions: {},
       ignoreEnvFile: true,
