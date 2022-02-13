@@ -1,13 +1,18 @@
-import React from 'react'
-import { AiOutlineLike } from 'react-icons/ai'
-import { BsFolder2Open } from 'react-icons/bs'
-import { GiBackwardTime } from 'react-icons/gi'
-import { RiMedalLine } from 'react-icons/ri'
-import { MdSaveAlt } from 'react-icons/md'
-import { BiExit } from 'react-icons/bi'
-import './index.css'
-import { Link, Outlet } from 'react-router-dom'
+import React from 'react';
+import { AiOutlineLike } from 'react-icons/ai';
+import { BsFolder2Open } from 'react-icons/bs';
+import { GiBackwardTime } from 'react-icons/gi';
+import { RiMedalLine } from 'react-icons/ri';
+import { MdSaveAlt } from 'react-icons/md';
+import { BiExit } from 'react-icons/bi';
+import './index.css';
+import { Link, Outlet } from 'react-router-dom';
+// eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
+import { useAppSelector } from '@/app/hooks';
+// eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
+import { selectProfile } from '@/features/Auth/authSlice';
 const PersonalPage = () => {
+  const profile = useAppSelector(selectProfile);
   return (
     <div className="container">
       <div className="col-9 container-main">
@@ -15,11 +20,11 @@ const PersonalPage = () => {
           <div className="col-3 content-user__left">
             <div className="user-background">
               <img
-                src="https://media-cdn.laodong.vn/Storage/NewsPortal/2020/6/30/816260/Cho-1.jpg"
+                src={profile?.avatarURL || 'https://i.pravatar.cc/800'}
                 alt=""
                 className="user-background__image"
               />
-              <span className="user-background__name">Trần Đức Cường</span>
+              <span className="user-background__name">{profile?.name}</span>
             </div>
             <ul className="user-list">
               <Link to="/ca-nhan/de-xuat">
@@ -64,6 +69,6 @@ const PersonalPage = () => {
         </div>
       </div>
     </div>
-  )
-}
-export default PersonalPage
+  );
+};
+export default PersonalPage;
