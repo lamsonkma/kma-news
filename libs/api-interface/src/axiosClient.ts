@@ -20,7 +20,7 @@ axiosClient.interceptors.request.use(async (config) => {
   return config;
 });
 
-export const ignorePath = ['/auth/login', '/auth/logout'];
+export const ignorePath = ['/auth/login', '/auth/logout', '/auth/refresh'];
 let refreshTokenRequest: Promise<RefreshTokenResponse> | null = null;
 axiosClient.interceptors.response.use(
   (response) => {
@@ -28,9 +28,11 @@ axiosClient.interceptors.response.use(
     return response;
   },
   (error) => {
-    // Token hết hạn
-    if (error?.response?.status === 401) {
-      console.group('Refresh token');
+    if (
+      error?.response?.status === 401 &&
+      !ignorePath.includes(error.config.url)
+    ) {
+      // console.group('Refresh token');
       console.log('Token expired');
       if (ignorePath.includes(window.location.pathname)) {
         console.log('Skip refresh token');
@@ -44,7 +46,10 @@ axiosClient.interceptors.response.use(
             return axiosClient.request(error.config);
           })
           .catch((error) => {
-            if (error?.response?.status === 403) {
+            if (
+              error?.response?.status === 401 ||
+              error?.response?.status === 403
+            ) {
               console.log('Refresh token failed');
               localStorage.removeItem('access_token');
             }
@@ -52,7 +57,7 @@ axiosClient.interceptors.response.use(
             throw error;
           });
       }
-      console.groupEnd();
+      // console.groupEnd();
     }
     const status = error?.response?.status && `[${error.response.status}] `;
     if (error?.response?.data?.message) {
