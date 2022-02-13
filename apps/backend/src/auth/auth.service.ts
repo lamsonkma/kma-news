@@ -3,6 +3,7 @@ import { UserService } from '../user/user.service';
 import { User } from '../user/entities/user.entity';
 import { TokenService } from '../token/token.service';
 import { LoginResultInterface } from '../common/interfaces/login-result.interface';
+import { ZaloService } from '@kma-news/zalo-auth';
 
 // Function compare two number
 
@@ -10,7 +11,8 @@ import { LoginResultInterface } from '../common/interfaces/login-result.interfac
 export class AuthService {
   constructor(
     private readonly userService: UserService,
-    private readonly tokenService: TokenService
+    private readonly tokenService: TokenService,
+    private readonly zaloService: ZaloService
   ) {}
 
   async validate(email: string, password: string) {
@@ -72,5 +74,9 @@ export class AuthService {
       if (error instanceof HttpException) throw error;
       return new ForbiddenException('Token expired');
     }
+  }
+
+  loginByZalo(code: string) {
+    return this.zaloService.getTokenFromAuthorizationCode(code);
   }
 }

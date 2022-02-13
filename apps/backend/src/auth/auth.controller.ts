@@ -3,6 +3,7 @@ import {
   Get,
   HttpCode,
   Post,
+  Query,
   Req,
   Res,
   UseGuards,
@@ -59,7 +60,7 @@ export class AuthController {
   }
 
   @Post('login/zalo')
-  loginByZalo() {
-    return; // Login success
+  loginByZalo(@Query('code') code: string) {
+    return this.authService.loginByZalo(code); // Login success
   }
 }
