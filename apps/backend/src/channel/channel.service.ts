@@ -10,6 +10,7 @@ import { Post, PostStatus } from '../post/entities/post.entity';
 import { Publisher } from '../publisher/entities/publisher.entity';
 import { User } from '../user/entities/user.entity';
 import { CreateChannelDto } from './dto/create-channel.dto';
+import { CreatePersonalChannelDto } from './dto/create-personal-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
 import { Channel } from './entities/channel.entity';
 
@@ -58,6 +59,15 @@ export class ChannelService {
     const channel = await this.channelRepository.findOne(id);
     if (!channel) throw new NotFoundException('Channel not found');
     return await this.contentByChannel(channel, page, limit);
+  }
+  createPersonalChannel(
+    userId: number,
+    createPersonalChannelDto: CreatePersonalChannelDto
+  ) {
+    return this.create(userId, {
+      ...createPersonalChannelDto,
+      isPublic: false,
+    });
   }
   async contentByChannel(channel: Channel, page: number, limit: number) {
     const query = this.postRepository.createQueryBuilder('post');
@@ -118,6 +128,17 @@ export class ChannelService {
     return this.channelRepository.findOne(id);
   }
 
+  findPersonalChannel(userId: number) {
+    return this.channelRepository.find({
+      where: {
+        owner: {
+          id: userId,
+        },
+        isPublic: false,
+      },
+      select: ['id', 'isPublic', 'name'],
+    });
+  }
   async update(userId: number, id: number, updateChannelDto: UpdateChannelDto) {
     const channel = await this.channelRepository.findOne(id, {
       relations: ['owner'],
