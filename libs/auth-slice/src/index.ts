@@ -6,6 +6,7 @@ import {
   getProfile,
   LoginParameter,
   ProfileResponse,
+  loginWithZalo,
 } from '@kma-news/api-interface';
 
 export const loginAction = createAsyncThunk(
@@ -43,8 +44,8 @@ export const logoutAction = createAsyncThunk(
 
 export const loginZaloAction = createAsyncThunk(
   'auth/login_zalo',
-  async (_: string, thunkAPI) => {
-    const result = await loginWithEmail({ email: '_', password: '' });
+  async (code: string) => {
+    const result = await loginWithZalo(code);
     return result;
   }
 );
@@ -106,12 +107,14 @@ const authSlice = createSlice({
         state.loggedIn = false;
         state.profile = undefined;
         localStorage.removeItem('access_token');
+        localStorage.removeItem('expiredAt');
       })
       .addCase(logoutAction.rejected, (state, action) => {
         state.loading = 'error';
         state.loggedIn = false;
         state.profile = undefined;
         localStorage.removeItem('access_token');
+        localStorage.removeItem('expiredAt');
       });
   },
 });
