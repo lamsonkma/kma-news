@@ -42,16 +42,22 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('/', app, document, customOptions);
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
-  const deployHost = ['ADMIN_HOST', 'BACKEND_HOST', 'FRONTEND_HOST'].map((e) =>
-    configSerice.get(e)
+  const deployHost = ['ADMIN_HOST', 'BACKEND_HOST', 'FRONTEND_HOST'].map(
+    (e) => {
+      const domain = configSerice.get(e);
+      if (domain) return [`http://${domain}`, `https://${domain}`];
+      return [];
+    }
   );
+  let origin = [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'https://kma-news.herokuapp.com',
+  ];
+  origin = origin.concat(...deployHost);
+  Logger.log(origin);
   app.enableCors({
-    origin: [
-      'http://localhost:4200',
-      'http://localhost:4201',
-      'https://kma-news.herokuapp.com',
-      ...deployHost,
-    ],
+    origin: origin,
     credentials: true,
   });
   app.use(cookieParser());

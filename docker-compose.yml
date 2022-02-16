@@ -68,6 +68,7 @@ services:
     networks:
       - db-network
       - redis-network
+    command: [ "node", "./dist/apps/crawler/main.js" ]
   admin:
     image: notekunn/kma-news-admin
     container_name: kma-news-admin
@@ -109,25 +110,6 @@ services:
     restart: always
     ports:
       - 6379:6379
-  seed_data:
-    image: notekunn/kma-news-backend
-    container_name: kma-news-seeder
-    environment:
-      NODE_ENV: production
-      DATABASE_URL: "mongodb://${DB_USERNAME}:${DB_PASSWORD}@db:27017/${DB_NAME}?authSource=admin"
-      SECRET: secret_for_token
-      REFRESH_SECRET: secret_for_refresh_token
-      CACHE_TTL: 60
-      ACCESS_TOKEN_TTL: 600
-      REFRESH_TOKEN_TTL: 86400
-
-    depends_on:
-      - db
-    networks:
-      - db-network
-    command: yarn backend seed
-    profiles:
-      - donotstart
   nginx-proxy:
     image: nginxproxy/nginx-proxy:alpine
     container_name: nginx-proxy
