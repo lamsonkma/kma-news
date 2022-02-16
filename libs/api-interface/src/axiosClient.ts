@@ -2,7 +2,7 @@ import axios from 'axios';
 import qs from 'qs';
 import { RefreshTokenResponse, refreshToken } from './auth';
 const axiosClient = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:8888',
+  baseURL: process.env.NX_API_URL || 'https://blog.kma-news.tech/',
   headers: {
     'Content-Type': 'application/json',
   },

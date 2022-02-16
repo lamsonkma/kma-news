@@ -11,7 +11,7 @@ import authSlice from '@kma-news/auth-slice';
 import historySlice from '@kma-news/history-slice';
 import channelSlice from '@kma-news/channel-slice';
 
-console.log(process.env['REACT_APP_API_URL']);
+console.log(process.env['NX_API_URL']);
 
 export const store = configureStore({
   reducer: {

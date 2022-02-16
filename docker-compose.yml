@@ -69,21 +69,21 @@ services:
       - db-network
       - redis-network
     command: [ "node", "./dist/apps/crawler/main.js" ]
-  admin:
-    image: notekunn/kma-news-admin
-    container_name: kma-news-admin
-    environment:
-      REACT_APP_API_URL: "https://${BACKEND_HOST}"
-      VIRTUAL_HOST: "${ADMIN_HOST}"
-      LETSENCRYPT_HOST: "${ADMIN_HOST}"
-      VIRTUAL_PORT: 80
-    expose:
-      - 80
-    ports:
-      - "${ADMIN_PORT}:80"
-    networks:
-      - app-network
-    command: [ "nginx", "-g", "daemon off;" ]
+  # admin:
+  #   image: notekunn/kma-news-admin
+  #   container_name: kma-news-admin
+  #   environment:
+  #     REACT_APP_API_URL: "https://${BACKEND_HOST}"
+  #     VIRTUAL_HOST: "${ADMIN_HOST}"
+  #     LETSENCRYPT_HOST: "${ADMIN_HOST}"
+  #     VIRTUAL_PORT: 80
+  #   expose:
+  #     - 80
+  #   ports:
+  #     - "${ADMIN_PORT}:80"
+  #   networks:
+  #     - app-network
+  #   command: [ "nginx", "-g", "daemon off;" ]
 
   db:
     image: mysql
