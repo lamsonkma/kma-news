@@ -1,5 +1,3 @@
-// eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
-import { RootState } from '@/app/store';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import {
   LoadingState,
@@ -12,7 +10,7 @@ import {
 
 export const loginAction = createAsyncThunk(
   'auth/login',
-  async (_: LoginParameter, thunkAPI) => {
+  async (_: LoginParameter) => {
     const result = await loginWithEmail(_);
     return result;
   }
@@ -75,9 +73,10 @@ const authSlice = createSlice({
         .addCase(act.fulfilled, (state, action) => {
           state.loading = 'done';
           state.loggedIn = true;
-          const { access_token, user } = action.payload;
+          const { access_token, expiredAt, user } = action.payload;
           state.profile = user;
           localStorage.setItem('access_token', access_token);
+          localStorage.setItem('expiredAt', expiredAt);
         })
         .addCase(act.rejected, (state, action) => {
           state.loading = 'error';
@@ -116,10 +115,17 @@ const authSlice = createSlice({
       });
   },
 });
+interface RootState {
+  auth: AuthState;
+}
 
-export const selectLoading = (state: RootState) => state.auth.loading;
-export const selectLoggedIn = (state: RootState) => state.auth.loggedIn;
-export const selectProfile = (state: RootState) => state.auth.profile;
-export const selectMessage = (state: RootState) => state.auth.message;
+export const selectLoading = <T extends RootState>(state: T) =>
+  state.auth.loading;
+export const selectLoggedIn = <T extends RootState>(state: T) =>
+  state.auth.loggedIn;
+export const selectProfile = <T extends RootState>(state: T) =>
+  state.auth.profile;
+export const selectMessage = <T extends RootState>(state: T) =>
+  state.auth.message;
 
 export default authSlice.reducer;
