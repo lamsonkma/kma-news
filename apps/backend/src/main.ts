@@ -42,11 +42,15 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('/', app, document, customOptions);
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
+  const deployHost = ['ADMIN_HOST', 'BACKEND_HOST', 'FRONTEND_HOST'].map((e) =>
+    configSerice.get(e)
+  );
   app.enableCors({
     origin: [
       'http://localhost:4200',
       'http://localhost:4201',
       'https://kma-news.herokuapp.com',
+      ...deployHost,
     ],
     credentials: true,
   });

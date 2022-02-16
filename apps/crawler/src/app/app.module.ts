@@ -16,10 +16,16 @@ import { User } from '../user/entities/user.entity';
 
 @Module({
   imports: [
-    BullModule.forRoot({
-      redis: {
-        host: 'localhost',
-        port: 6379,
+    BullModule.forRootAsync({
+      inject: [ConfigService],
+      imports: [ConfigModule],
+      useFactory: (cfg: ConfigService) => {
+        return {
+          redis: {
+            host: cfg.get('REDIS_HOST'),
+            port: +cfg.get('REDIS_PORT'),
+          },
+        };
       },
     }),
     CronModule,

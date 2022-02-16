@@ -1,0 +1,183 @@
+version: '3.4'
+
+services:
+  backend:
+    image: notekunn/kma-news-backend
+    container_name: kma-news-backend
+    environment:
+      NODE_ENV: production
+      PORT: 8080
+      VIRTUAL_HOST: "${BACKEND_HOST}"
+      LETSENCRYPT_HOST: "${BACKEND_HOST}"
+      VIRTUAL_PORT: 8080
+      ZALO_APP_ID: "${ZALO_APP_ID}"
+      ZALO_SECRET_KEY: "${ZALO_SECRET_KEY}"
+      BACKEND_HOST: "${BACKEND_HOST}"
+      FRONTEND_HOST: "${FRONTEND_HOST}"
+      ADMIN_HOST: "${ADMIN_HOST}"
+      COOKIE_DOMAIN: "${COOKIE_DOMAIN}"
+      DATABASE_HOST: "db"
+      DATABASE_PORT: 3306
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
+      ACCESS_TOKEN_TTL: ${ACCESS_TOKEN_TTL}
+      REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET}
+      REFRESH_TOKEN_TTL: ${REFRESH_TOKEN_TTL}
+
+    depends_on:
+      - db
+      - cache
+    expose:
+      - 8080
+    ports:
+      - "${BACKEND_PORT}:8080"
+    networks:
+      - db-network
+      - redis-network
+      - app-network
+    command: [ "node", "./dist/apps/backend/main.js" ]
+
+  frontend:
+    image: notekunn/kma-news-frontend
+    container_name: kma-news-frontend
+    environment:
+      REACT_APP_API_URL: "https://${BACKEND_HOST}"
+      VIRTUAL_HOST: "${FRONTEND_HOST}"
+      LETSENCRYPT_HOST: "${FRONTEND_HOST}"
+      VIRTUAL_PORT: 80
+    expose:
+      - 80
+    ports:
+      - "${FRONTEND_PORT}:80"
+    networks:
+      - app-network
+    command: [ "nginx", "-g", "daemon off;" ]
+  crawler:
+    image: notekunn/kma-news-crawler
+    container_name: kma-news-crawler
+    environment:
+      DATABASE_HOST: "db"
+      DATABASE_PORT: 3306
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      REDIS_HOST: "cache"
+      REDIS_PORT: 6379
+    networks:
+      - db-network
+      - redis-network
+  admin:
+    image: notekunn/kma-news-admin
+    container_name: kma-news-admin
+    environment:
+      REACT_APP_API_URL: "https://${BACKEND_HOST}"
+      VIRTUAL_HOST: "${ADMIN_HOST}"
+      LETSENCRYPT_HOST: "${ADMIN_HOST}"
+      VIRTUAL_PORT: 80
+    expose:
+      - 80
+    ports:
+      - "${ADMIN_PORT}:80"
+    networks:
+      - app-network
+    command: [ "nginx", "-g", "daemon off;" ]
+
+  db:
+    image: mysql
+    container_name: kma-news-db
+    environment:
+      - "MYSQL_DATABASE=${DATABASE_NAME}"
+      - "MYSQL_USER=${DATABASE_USERNAME}"
+      - "MYSQL_ROOT_PASSWORD=${DATABASE_PASSWORD}"
+      - "MYSQL_PASSWORD=${DATABASE_PASSWORD}"
+    volumes:
+      - appdata:/var/lib/mysql
+    ports:
+      - 3306:3306
+    restart: always
+    networks:
+      - db-network
+  cache:
+    image: redis:5-alpine
+    container_name: kma-news-cache
+    volumes:
+      - appcache:/data
+    networks:
+      - redis-network
+    restart: always
+    ports:
+      - 6379:6379
+  seed_data:
+    image: notekunn/kma-news-backend
+    container_name: kma-news-seeder
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: "mongodb://${DB_USERNAME}:${DB_PASSWORD}@db:27017/${DB_NAME}?authSource=admin"
+      SECRET: secret_for_token
+      REFRESH_SECRET: secret_for_refresh_token
+      CACHE_TTL: 60
+      ACCESS_TOKEN_TTL: 600
+      REFRESH_TOKEN_TTL: 86400
+
+    depends_on:
+      - db
+    networks:
+      - db-network
+    command: yarn backend seed
+    profiles:
+      - donotstart
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy:alpine
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - conf:/etc/nginx/conf.d
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - dhparam:/etc/nginx/dhparam
+      - certs:/etc/nginx/certs:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    networks:
+      - app-network
+    labels:
+      - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
+
+  acme-companion:
+    image: nginxproxy/acme-companion
+    container_name: nginx-proxy-acme
+    depends_on:
+      - "nginx-proxy"
+    volumes:
+      - conf:/etc/nginx/conf.d
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - dhparam:/etc/nginx/dhparam
+      - certs:/etc/nginx/certs
+      - acme:/etc/acme.sh
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - app-network
+
+volumes:
+  appdata: null
+  appcache: null
+  nginx_secrets: null
+  data: null
+  conf: null
+  vhost: null
+  html: null
+  dhparam: null
+  certs: null
+  acme: null
+
+networks:
+  db-network:
+    driver: bridge
+  redis-network:
+    driver: bridge
+  app-network:
+    driver: bridge

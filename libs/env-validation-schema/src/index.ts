@@ -22,4 +22,10 @@ export const EnvValidationSchema = Joi.object({
   ZALO_SECRET_KEY: Joi.string().required(),
   ZALO_APP_ID: Joi.string().required(),
   COOKIE_DOMAIN: Joi.string().required(),
+  BACKEND_PORT: Joi.number().required(),
+  FRONTEND_PORT: Joi.number().required(),
+  ADMIN_PORT: Joi.number().required(),
+  ADMIN_HOST: Joi.string().hostname().required(),
+  FRONTEND_HOST: Joi.string().hostname().required(),
+  BACKEND_HOST: Joi.string().hostname().required(),
 });
