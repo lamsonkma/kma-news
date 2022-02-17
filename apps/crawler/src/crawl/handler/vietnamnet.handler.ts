@@ -60,18 +60,17 @@ export class VietNamNetHandler extends BaseHandler {
   }
 
   getCategories($: CheerioAPI): string[] {
-    const categoriesName = [...$('ul.breadcrumb').find('li')].map((e) =>
+    const categoriesName = [...$('.top-cate-head-title').find('a')].map((e) =>
       this.formatText($(e).text())
     );
     return categoriesName;
   }
 
   getOwner($: CheerioAPI): string {
-    const owner = $('#ArticleContent > p > strong').first().text();
-    return this.formatText(owner);
+    return this.formatText($('#ArticleContent p.t-j').last().text());
   }
 
   getTimeString($: CheerioAPI): string {
-    return this.formatText($('span.date').text());
+    return this.formatText($('.ArticleDate').text());
   }
 }

@@ -22,7 +22,7 @@ const customOptions: SwaggerCustomOptions = {
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configSerice = app.get(ConfigService);
-  const port = configSerice.get<number>('PORT');
+  const port = +configSerice.get<number>('PORT');
   const config = new DocumentBuilder()
     .setTitle('KMA News API')
     .setDescription('API for KMA News')
@@ -50,8 +50,8 @@ async function bootstrap() {
     }
   );
   let origin = [
-    'http://localhost:3000',
-    'http://localhost:3001',
+    'http://localhost:4200',
+    'http://localhost:4201',
     'https://kma-news.herokuapp.com',
   ];
   origin = origin.concat(...deployHost);

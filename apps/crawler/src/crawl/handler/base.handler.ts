@@ -41,7 +41,8 @@ export abstract class BaseHandler {
   }
   protected formatTime(time = 'Thứ ba, 21/12/2021, 08:32 (GMT+7)') {
     try {
-      const date = moment(time, this.timeFormat, 'vi', false);
+      const date = moment(time, this.timeFormat);
+      if (!date.isValid()) return new Date();
       return date.toDate();
     } catch (error) {
       return new Date();
@@ -66,9 +67,8 @@ export abstract class BaseHandler {
     post.keywords = this.getKeywords($);
     post.owner = this.getOwner($);
     const timeString = this.getTimeString($);
-    post.publishedAt = this.formatTime(timeString);
+    post.publishedAt = this.formatTime(timeString) || new Date();
     post.status = PostStatus.PUBLISHED;
-    // console.log(post.publishedAt);
     post.paragraphs = this.getParagraphs($);
     const firstImage = post.paragraphs.find(
       (e) => e.type === ParagraphType.IMAGE

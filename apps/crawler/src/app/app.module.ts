@@ -22,8 +22,8 @@ import { User } from '../user/entities/user.entity';
       useFactory: (cfg: ConfigService) => {
         return {
           redis: {
-            host: cfg.get('REDIS_HOST'),
-            port: +cfg.get('REDIS_PORT'),
+            host: cfg.get('REDIS_HOST') || 'localhost',
+            port: +cfg.get('REDIS_PORT') || 6379,
           },
         };
       },

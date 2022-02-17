@@ -78,17 +78,20 @@ export class VNExpressHandler extends BaseHandler {
   }
 
   getCategories($: CheerioAPI): string[] {
-    const categoriesName = [...$('.top-cate-head-title').find('a')].map((e) =>
+    const categoriesName = [...$('ul.breadcrumb').find('li')].map((e) =>
       this.formatText($(e).text())
     );
     return categoriesName;
   }
 
   getOwner($: CheerioAPI): string {
-    return this.formatText($('#ArticleContent p.t-j').last().text());
+    const owner =
+      $('p.author_mail').text() ||
+      $('p.Normal[style="text-align:right;"]').text();
+    return this.formatText(owner);
   }
 
   getTimeString($: CheerioAPI): string {
-    return this.formatText($('.ArticleDate').text());
+    return this.formatText($('span.date').text());
   }
 }
