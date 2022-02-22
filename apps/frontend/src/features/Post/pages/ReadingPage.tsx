@@ -19,6 +19,11 @@ import {
 } from '../postSlice';
 import { CommentBox } from '../components/Comments/CommentBox';
 import { PostOther } from '../components/PostOther';
+import {
+  createReatPostAction,
+  getReactPostAction,
+  selectActiveReact,
+} from 'libs/react-post-slice/src';
 
 import {
   getSavePostAction,
@@ -46,18 +51,24 @@ const ReadingPage: React.FC = () => {
   const isSave = useAppSelector(selectSave);
   const idSave = useAppSelector(selectIdSave);
   const navigate = useNavigate();
-
-  const [activeReact, setActiveReact] = useState(false);
-
+  const [activeReact, setActiveReact] = useState(
+    useAppSelector(selectActiveReact)
+  );
   useEffect(() => {
-    if (id) dispatch(getPostAction(+id));
+    if (id) {
+      dispatch(getPostAction(+id));
+      dispatch(getReactPostAction(+id));
+    }
   }, [dispatch, id]);
   useEffect(() => {
     if (loading === 'done' && data?.slug !== slug) {
       navigate('/');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    window.scroll(0, 0);
   }, [loading]);
+  const btnReactPost = () => {
+    if (id) {
+      dispatch(createReatPostAction(+id));
   useEffect(() => {
     if (id) dispatch(getSavePostAction(parseInt(id)));
   }, [dispatch, id]);
@@ -173,7 +184,11 @@ const ReadingPage: React.FC = () => {
                     <div className="action--m action-share-zalo"></div>
                     <div className="action--m action-share-face"></div>
                     <div
-                      className="action--m action-like"
+                      className={
+                        activeReact === true
+                          ? 'action--m action-like action-like--active'
+                          : 'action--m action-like'
+                      }
                       onClick={btnReactPost}
                       <BiLike className="action-like--hover" />
                     </div>
