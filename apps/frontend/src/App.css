@@ -288,8 +288,8 @@
 }
 
 /* .header-navbar-item:last-child{
-      border-right: 1px solid hsla(0,0%,100%,.2);
-  } */
+        border-right: 1px solid hsla(0,0%,100%,.2);
+    } */
 .header-navbar-item:hover {
   cursor: pointer;
   background-color: #2990a0;
@@ -1663,4 +1663,12 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.btnPage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.prev {
+  margin-right: 30px;
 }

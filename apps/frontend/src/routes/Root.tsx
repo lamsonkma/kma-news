@@ -40,6 +40,7 @@ const PageCategory = React.lazy(
   () => import('@/features/Category/pages/pageCategory')
 );
 
+const PageNew = React.lazy(() => import('@/features/News/pages/newPage'));
 export const RootRouter = () => {
   return (
     <div>
@@ -67,7 +68,10 @@ export const RootRouter = () => {
               <Route path="theo-doi" element={<SubscriptionPage />} />
             </Route>
           </Route>
-          <Route path="/tin-moi" element={<BasicLayout />}></Route>
+          <Route path="/tin-moi" element={<BasicLayout />}>
+            <Route path="" element={<PageNew />} />
+            <Route path=":page" element={<PageNew />} />
+          </Route>
           <Route path="/chu-de" element={<BasicLayout />}>
             <Route path="" element={<Topic />} />
             <Route path=":topicId" element={<PostOnTopic />} />
