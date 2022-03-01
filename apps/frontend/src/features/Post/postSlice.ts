@@ -20,6 +20,10 @@ export const getPostAction = createAsyncThunk(
   }
 );
 
+export const getAllPostAction = createAsyncThunk('post/fetchAll', () => {
+  return;
+});
+
 const postSlice = createSlice({
   name: 'new',
   initialState,
